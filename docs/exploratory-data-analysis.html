@@ -200,7 +200,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">2.2</span> Distribution of No. of Friends</h2>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="exploratory-data-analysis.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> sns,<span class="fu">aes</span>(<span class="at">x=</span>friends))<span class="sc">+</span><span class="fu">geom_density</span>()<span class="sc">+</span> <span class="fu">xlim</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">200</span>))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="st">&quot;Distribution of Number of Friends&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: Removed 136 rows containing non-finite values (stat_density).</code></pre>
-<p><img src="_main_files/figures/age.png" width="672" />
+<p><img src="figures/age.png" width="672" />
 * Most have friends from 1-50, while 100 or more is rare</p>
 </div>
 <div id="converting-grad-year-into-factor-variable" class="section level2" number="2.3">
