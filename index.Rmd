@@ -1,0 +1,188 @@
+---
+title: 'Social Networking profile words analysis: Clustering with H2o package and
+  base R'
+author: "Varun Katyal"
+date: "08/01/2021"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+---
+
+# Loading required libraries and read dataset
+```{r message=FALSE}
+library(data.table)
+library(mltools)
+library(h2o)
+library(dplyr)
+library(ggplot2)
+
+
+```
+
+## importing csv file 
+```{r}
+sns <- read.csv('data.csv',stringsAsFactors =T )
+str(sns)
+```
+
+# Exploratory Data Analysis
+
+## distribution of gender
+```{r}
+sns %>% group_by(gender) %>% summarise(number=n())
+```
+* High proportion of females compared to males
+
+## Distribution of No. of Friends
+```{r}
+ggplot(data = sns,aes(x=friends))+geom_density()+ xlim(c(0,200))+ggtitle("Distribution of Number of Friends")
+
+```
+* Most have friends from 1-50, while 100 or more is rare
+
+
+
+
+## converting grad year into factor variable
+```{r}
+sns$gradyear <- factor(sns$gradyear)
+```
+
+## converting categorical variable into numeric(one-hot encoding) using mltools package 
+## removing rows containing NAs
+```{r message=FALSE, warning=FALSE}
+sns <- data.table(sns)
+sns_new <- sns[complete.cases(sns),]
+sns_new <- one_hot(sns_new,sparsifyNAs = T)
+str(sns_new)
+```
+
+## Removing age outliers
+```{r}
+sns_new <- sns_new %>% filter(age>=13 & age <20)
+```
+
+##  normalizing Profile's interest variables
+
+```{r}
+sns_int <- as.data.frame( apply(sns_new[,9:44],2,scale))
+str(sns_int)
+```
+
+
+# Modelling
+
+## initializing h2o session
+```{r}
+
+h2o.init()
+```
+
+
+## clustering based on interest
+## creating h2o data frame
+```{r}
+cnames <- colnames(sns_int)
+clus.hex = as.h2o(sns_int)
+```
+
+## K- clusters from 3 to 30
+```{r}
+p <- seq(3,30,3)
+```
+
+
+## Starting with 6 cluster
+```{r}
+mdl <- h2o.kmeans(training_frame = clus.hex,x=cnames,k=6)
+mdl
+```
+
+## Plotting Elbow plot and finding optimum no. of K
+
+```{r}
+val <- sapply(p, function(i){
+  mdl <- h2o.kmeans(training_frame = clus.hex,x=cnames,k=i)
+  h2o.tot_withinss(mdl)
+  
+})
+plot(p,val,type = "l",main="Elbow Plot",xlab = "K",ylab = "Total Within Sum of Squares")
+
+```
+
+* Bend around K = 18
+* Evaluating Clustering with h2o package and base R
+
+
+## Re-runing K-mean algorithm with 18 cluster
+```{r}
+mdl18 <- h2o.kmeans(training_frame = clus.hex,x=cnames,k=18)
+mdl18
+```
+
+### With base R
+* Cluster Sizes
+* Within Sum of Squares
+
+```{r}
+km <- kmeans(sns_int,18)
+size <- km$size
+wss <- km$withinss
+```
+
+
+```{r}
+size
+```
+
+
+```{r}
+wss
+```
+
+## Goodness of Fit
+* Ratio of between Sum of Squares and Total sum of squares
+* Ideally  clustering that has the properties of internal cohesion and external separation, i.e. the ratio should approach 1.
+
+```{r}
+h2o.betweenss(mdl18)/h2o.totss(mdl18)
+```
+
+* Ratio is 0.24. Does not indicate good clustering
+* With some very small cluster sizes indicates lots of outliers in different interest variables 
+* Also huge difference between largest and smallest cluster show, it may be large group of teens share similar interests
+
+## Cluster labelling in dataset
+```{r}
+predictions <- h2o.predict(mdl18, clus.hex)
+
+sns_new$clust <- factor(as.vector(predictions))
+
+```
+
+## Examining proportion of females in each cluster
+```{r message=FALSE}
+fprop <- sns_new %>% group_by(clust) %>% summarise(props=mean(gender_F),size=n())
+fprop
+
+```
+
+
+
+## Average no. of friends in each cluster
+```{r}
+avgf <- sns_new %>% group_by(clust) %>% summarise(avgf=mean(friends),size=n())
+avgf
+```
+
+
+## Lets examine profile with high no. of drugs and death words
+```{r}
+hdd <- sns_new %>% filter(death>5 | drugs>5)
+hdd
+
+```
+* Most of them belong to cluster 8 and 12
+
+
+
+

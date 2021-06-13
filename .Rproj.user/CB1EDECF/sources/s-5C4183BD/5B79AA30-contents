@@ -1,0 +1,8 @@
+name: "Clustering"
+navbar:
+  title: "K means Clustering"
+  left:
+    - text: "Home"
+      href: index.html
+output:
+  html_document: default

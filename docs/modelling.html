@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 Modelling | Social Networking profile words analysis: Clustering with H2o package and base R</title>
+  <meta name="description" content="3 Modelling | Social Networking profile words analysis: Clustering with H2o package and base R" />
+  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 Modelling | Social Networking profile words analysis: Clustering with H2o package and base R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 Modelling | Social Networking profile words analysis: Clustering with H2o package and base R" />
+  
+  
+  
+
+<meta name="author" content="Varun Katyal" />
+
+
+<meta name="date" content="2021-08-01" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="exploratory-data-analysis.html"/>
+
+<script src="libs/header-attrs-2.7/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Loading required libraries and read dataset</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#importing-csv-file"><i class="fa fa-check"></i><b>1.1</b> importing csv file</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html"><i class="fa fa-check"></i><b>2</b> Exploratory Data Analysis</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#distribution-of-gender"><i class="fa fa-check"></i><b>2.1</b> distribution of gender</a></li>
+<li class="chapter" data-level="2.2" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#distribution-of-no.-of-friends"><i class="fa fa-check"></i><b>2.2</b> Distribution of No. of Friends</a></li>
+<li class="chapter" data-level="2.3" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#converting-grad-year-into-factor-variable"><i class="fa fa-check"></i><b>2.3</b> converting grad year into factor variable</a></li>
+<li class="chapter" data-level="2.4" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#converting-categorical-variable-into-numericone-hot-encoding-using-mltools-package"><i class="fa fa-check"></i><b>2.4</b> converting categorical variable into numeric(one-hot encoding) using mltools package</a></li>
+<li class="chapter" data-level="2.5" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#removing-rows-containing-nas"><i class="fa fa-check"></i><b>2.5</b> removing rows containing NAs</a></li>
+<li class="chapter" data-level="2.6" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#removing-age-outliers"><i class="fa fa-check"></i><b>2.6</b> Removing age outliers</a></li>
+<li class="chapter" data-level="2.7" data-path="exploratory-data-analysis.html"><a href="exploratory-data-analysis.html#normalizing-profiles-interest-variables"><i class="fa fa-check"></i><b>2.7</b> normalizing Profile’s interest variables</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="modelling.html"><a href="modelling.html"><i class="fa fa-check"></i><b>3</b> Modelling</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="modelling.html"><a href="modelling.html#initializing-h2o-session"><i class="fa fa-check"></i><b>3.1</b> initializing h2o session</a></li>
+<li class="chapter" data-level="3.2" data-path="modelling.html"><a href="modelling.html#clustering-based-on-interest"><i class="fa fa-check"></i><b>3.2</b> clustering based on interest</a></li>
+<li class="chapter" data-level="3.3" data-path="modelling.html"><a href="modelling.html#creating-h2o-data-frame"><i class="fa fa-check"></i><b>3.3</b> creating h2o data frame</a></li>
+<li class="chapter" data-level="3.4" data-path="modelling.html"><a href="modelling.html#k--clusters-from-3-to-30"><i class="fa fa-check"></i><b>3.4</b> K- clusters from 3 to 30</a></li>
+<li class="chapter" data-level="3.5" data-path="modelling.html"><a href="modelling.html#starting-with-6-cluster"><i class="fa fa-check"></i><b>3.5</b> Starting with 6 cluster</a></li>
+<li class="chapter" data-level="3.6" data-path="modelling.html"><a href="modelling.html#plotting-elbow-plot-and-finding-optimum-no.-of-k"><i class="fa fa-check"></i><b>3.6</b> Plotting Elbow plot and finding optimum no. of K</a></li>
+<li class="chapter" data-level="3.7" data-path="modelling.html"><a href="modelling.html#re-runing-k-mean-algorithm-with-18-cluster"><i class="fa fa-check"></i><b>3.7</b> Re-runing K-mean algorithm with 18 cluster</a>
+<ul>
+<li class="chapter" data-level="3.7.1" data-path="modelling.html"><a href="modelling.html#with-base-r"><i class="fa fa-check"></i><b>3.7.1</b> With base R</a></li>
+</ul></li>
+<li class="chapter" data-level="3.8" data-path="modelling.html"><a href="modelling.html#goodness-of-fit"><i class="fa fa-check"></i><b>3.8</b> Goodness of Fit</a></li>
+<li class="chapter" data-level="3.9" data-path="modelling.html"><a href="modelling.html#cluster-labelling-in-dataset"><i class="fa fa-check"></i><b>3.9</b> Cluster labelling in dataset</a></li>
+<li class="chapter" data-level="3.10" data-path="modelling.html"><a href="modelling.html#examining-proportion-of-females-in-each-cluster"><i class="fa fa-check"></i><b>3.10</b> Examining proportion of females in each cluster</a></li>
+<li class="chapter" data-level="3.11" data-path="modelling.html"><a href="modelling.html#average-no.-of-friends-in-each-cluster"><i class="fa fa-check"></i><b>3.11</b> Average no. of friends in each cluster</a></li>
+<li class="chapter" data-level="3.12" data-path="modelling.html"><a href="modelling.html#lets-examine-profile-with-high-no.-of-drugs-and-death-words"><i class="fa fa-check"></i><b>3.12</b> Lets examine profile with high no. of drugs and death words</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Social Networking profile words analysis: Clustering with H2o package and base R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="modelling" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Modelling</h1>
+<div id="initializing-h2o-session" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> initializing h2o session</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="modelling.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">h2o.init</span>()</span></code></pre></div>
+<pre><code>##  Connection successful!
+## 
+## R is connected to the H2O cluster: 
+##     H2O cluster uptime:         29 minutes 7 seconds 
+##     H2O cluster timezone:       Asia/Kolkata 
+##     H2O data parsing timezone:  UTC 
+##     H2O cluster version:        3.32.0.1 
+##     H2O cluster version age:    8 months and 4 days !!! 
+##     H2O cluster name:           H2O_started_from_R_varun_esn809 
+##     H2O cluster total nodes:    1 
+##     H2O cluster total memory:   1.55 GB 
+##     H2O cluster total cores:    4 
+##     H2O cluster allowed cores:  4 
+##     H2O cluster healthy:        TRUE 
+##     H2O Connection ip:          localhost 
+##     H2O Connection port:        54321 
+##     H2O Connection proxy:       NA 
+##     H2O Internal Security:      FALSE 
+##     H2O API Extensions:         Amazon S3, Algos, AutoML, Core V3, TargetEncoder, Core V4 
+##     R Version:                  R version 4.0.3 (2020-10-10)</code></pre>
+<pre><code>## Warning in h2o.clusterInfo(): 
+## Your H2O cluster version is too old (8 months and 4 days)!
+## Please download and install the latest version from http://h2o.ai/download/</code></pre>
+</div>
+<div id="clustering-based-on-interest" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> clustering based on interest</h2>
+</div>
+<div id="creating-h2o-data-frame" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> creating h2o data frame</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="modelling.html#cb19-1" aria-hidden="true" tabindex="-1"></a>cnames <span class="ot">&lt;-</span> <span class="fu">colnames</span>(sns_int)</span>
+<span id="cb19-2"><a href="modelling.html#cb19-2" aria-hidden="true" tabindex="-1"></a>clus.hex <span class="ot">=</span> <span class="fu">as.h2o</span>(sns_int)</span></code></pre></div>
+<pre><code>## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+<div id="k--clusters-from-3-to-30" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> K- clusters from 3 to 30</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="modelling.html#cb21-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">3</span>,<span class="dv">30</span>,<span class="dv">3</span>)</span></code></pre></div>
+</div>
+<div id="starting-with-6-cluster" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Starting with 6 cluster</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="modelling.html#cb22-1" aria-hidden="true" tabindex="-1"></a>mdl <span class="ot">&lt;-</span> <span class="fu">h2o.kmeans</span>(<span class="at">training_frame =</span> clus.hex,<span class="at">x=</span>cnames,<span class="at">k=</span><span class="dv">6</span>)</span></code></pre></div>
+<pre><code>## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |=======                                                               |  10%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="modelling.html#cb24-1" aria-hidden="true" tabindex="-1"></a>mdl</span></code></pre></div>
+<pre><code>## Model Details:
+## ==============
+## 
+## H2OClusteringModel: kmeans
+## Model ID:  KMeans_model_R_1623566175150_25 
+## Model Summary: 
+##   number_of_rows number_of_clusters number_of_categorical_columns
+## 1          23602                  6                             0
+##   number_of_iterations within_cluster_sum_of_squares total_sum_of_squares
+## 1                   10                  738694.73682         849636.00000
+##   between_cluster_sum_of_squares
+## 1                   110941.26318
+## 
+## 
+## H2OClusteringMetrics: kmeans
+## ** Reported on training data. **
+## 
+## 
+## Total Within SS:  738322.5
+## Between SS:  111313.5
+## Total SS:  849636 
+## Centroid Statistics: 
+##   centroid        size within_cluster_sum_of_squares
+## 1        1 20850.00000                  431417.91323
+## 2        2     1.00000                       0.00000
+## 3        3     1.00000                       0.00000
+## 4        4   517.00000                   29608.61042
+## 5        5  2044.00000                  267203.23027
+## 6        6   189.00000                   10092.70267</code></pre>
+</div>
+<div id="plotting-elbow-plot-and-finding-optimum-no.-of-k" class="section level2" number="3.6">
+<h2><span class="header-section-number">3.6</span> Plotting Elbow plot and finding optimum no. of K</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="modelling.html#cb26-1" aria-hidden="true" tabindex="-1"></a>val <span class="ot">&lt;-</span> <span class="fu">sapply</span>(p, <span class="cf">function</span>(i){</span>
+<span id="cb26-2"><a href="modelling.html#cb26-2" aria-hidden="true" tabindex="-1"></a>  mdl <span class="ot">&lt;-</span> <span class="fu">h2o.kmeans</span>(<span class="at">training_frame =</span> clus.hex,<span class="at">x=</span>cnames,<span class="at">k=</span>i)</span>
+<span id="cb26-3"><a href="modelling.html#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">h2o.tot_withinss</span>(mdl)</span>
+<span id="cb26-4"><a href="modelling.html#cb26-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-5"><a href="modelling.html#cb26-5" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<pre><code>## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |=====================                                                 |  30%
+  |                                                                            
+  |======================================================================| 100%
+## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |=====================                                                 |  30%
+  |                                                                            
+  |======================================================================| 100%
+## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%
+## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="modelling.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p,val,<span class="at">type =</span> <span class="st">&quot;l&quot;</span>,<span class="at">main=</span><span class="st">&quot;Elbow Plot&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;K&quot;</span>,<span class="at">ylab =</span> <span class="st">&quot;Total Within Sum of Squares&quot;</span>)</span></code></pre></div>
+<p><img src="_main_files/figures/elbow.png" width="672" /></p>
+<ul>
+<li>Bend around K = 18</li>
+<li>Evaluating Clustering with h2o package and base R</li>
+</ul>
+</div>
+<div id="re-runing-k-mean-algorithm-with-18-cluster" class="section level2" number="3.7">
+<h2><span class="header-section-number">3.7</span> Re-runing K-mean algorithm with 18 cluster</h2>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="modelling.html#cb29-1" aria-hidden="true" tabindex="-1"></a>mdl18 <span class="ot">&lt;-</span> <span class="fu">h2o.kmeans</span>(<span class="at">training_frame =</span> clus.hex,<span class="at">x=</span>cnames,<span class="at">k=</span><span class="dv">18</span>)</span></code></pre></div>
+<pre><code>## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="modelling.html#cb31-1" aria-hidden="true" tabindex="-1"></a>mdl18</span></code></pre></div>
+<pre><code>## Model Details:
+## ==============
+## 
+## H2OClusteringModel: kmeans
+## Model ID:  KMeans_model_R_1623566175150_36 
+## Model Summary: 
+##   number_of_rows number_of_clusters number_of_categorical_columns
+## 1          23602                 18                             0
+##   number_of_iterations within_cluster_sum_of_squares total_sum_of_squares
+## 1                   10                  613616.01105         849636.00000
+##   between_cluster_sum_of_squares
+## 1                   236019.98895
+## 
+## 
+## H2OClusteringMetrics: kmeans
+## ** Reported on training data. **
+## 
+## 
+## Total Within SS:  610439.2
+## Between SS:  239196.8
+## Total SS:  849636 
+## Centroid Statistics: 
+##    centroid        size within_cluster_sum_of_squares
+## 1         1 15891.00000                  164834.22829
+## 2         2     1.00000                       0.00000
+## 3         3     1.00000                       0.00000
+## 4         4     1.00000                       0.00000
+## 5         5     2.00000                     666.51515
+## 6         6    60.00000                   19932.59158
+## 7         7   189.00000                   10134.45119
+## 8         8  1349.00000                   73169.25517
+## 9         9   517.00000                   18968.11824
+## 10       10   292.00000                   13233.86216
+## 11       11   469.00000                   24230.78742
+## 12       12   176.00000                   25261.68570
+## 13       13   182.00000                    9333.15162
+## 14       14   331.00000                   22530.19726
+## 15       15   224.00000                    9425.04183
+## 16       16   474.00000                   20559.78941
+## 17       17  2706.00000                  144601.74113
+## 18       18   737.00000                   53557.80382</code></pre>
+<div id="with-base-r" class="section level3" number="3.7.1">
+<h3><span class="header-section-number">3.7.1</span> With base R</h3>
+<ul>
+<li>Cluster Sizes</li>
+<li>Within Sum of Squares</li>
+</ul>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="modelling.html#cb33-1" aria-hidden="true" tabindex="-1"></a>km <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(sns_int,<span class="dv">18</span>)</span>
+<span id="cb33-2"><a href="modelling.html#cb33-2" aria-hidden="true" tabindex="-1"></a>size <span class="ot">&lt;-</span> km<span class="sc">$</span>size</span>
+<span id="cb33-3"><a href="modelling.html#cb33-3" aria-hidden="true" tabindex="-1"></a>wss <span class="ot">&lt;-</span> km<span class="sc">$</span>withinss</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="modelling.html#cb34-1" aria-hidden="true" tabindex="-1"></a>size</span></code></pre></div>
+<pre><code>##  [1]   296   425  1195     1  2458   758   302   472 12592   200   556  1647
+## [13]   713   342   630   335   394   286</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="modelling.html#cb36-1" aria-hidden="true" tabindex="-1"></a>wss</span></code></pre></div>
+<pre><code>##  [1]  19878.06  17032.57  29080.80      0.00 101162.13  21262.44  12894.66
+##  [8]  14762.75 104656.16  11035.62  26963.43  31061.63  38568.43  35402.55
+## [15]  34460.02  17137.45  15202.54  54601.87</code></pre>
+</div>
+</div>
+<div id="goodness-of-fit" class="section level2" number="3.8">
+<h2><span class="header-section-number">3.8</span> Goodness of Fit</h2>
+<ul>
+<li>Ratio of between Sum of Squares and Total sum of squares</li>
+<li>Ideally clustering that has the properties of internal cohesion and external separation, i.e. the ratio should approach 1.</li>
+</ul>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="modelling.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">h2o.betweenss</span>(mdl18)<span class="sc">/</span><span class="fu">h2o.totss</span>(mdl18)</span></code></pre></div>
+<pre><code>## [1] 0.2815285</code></pre>
+<ul>
+<li>Ratio is 0.24. Does not indicate good clustering</li>
+<li>With some very small cluster sizes indicates lots of outliers in different interest variables</li>
+<li>Also huge difference between largest and smallest cluster show, it may be large group of teens share similar interests</li>
+</ul>
+</div>
+<div id="cluster-labelling-in-dataset" class="section level2" number="3.9">
+<h2><span class="header-section-number">3.9</span> Cluster labelling in dataset</h2>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="modelling.html#cb40-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">h2o.predict</span>(mdl18, clus.hex)</span></code></pre></div>
+<pre><code>## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="modelling.html#cb42-1" aria-hidden="true" tabindex="-1"></a>sns_new<span class="sc">$</span>clust <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">as.vector</span>(predictions))</span></code></pre></div>
+</div>
+<div id="examining-proportion-of-females-in-each-cluster" class="section level2" number="3.10">
+<h2><span class="header-section-number">3.10</span> Examining proportion of females in each cluster</h2>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="modelling.html#cb43-1" aria-hidden="true" tabindex="-1"></a>fprop <span class="ot">&lt;-</span> sns_new <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(clust) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">props=</span><span class="fu">mean</span>(gender_F),<span class="at">size=</span><span class="fu">n</span>())</span>
+<span id="cb43-2"><a href="modelling.html#cb43-2" aria-hidden="true" tabindex="-1"></a>fprop</span></code></pre></div>
+<pre><code>## # A tibble: 18 x 3
+##    clust props  size
+##  * &lt;fct&gt; &lt;dbl&gt; &lt;int&gt;
+##  1 0     0.775 15891
+##  2 1     1         1
+##  3 2     1         1
+##  4 3     1         1
+##  5 4     1         2
+##  6 5     0.95     60
+##  7 6     0.757   189
+##  8 7     0.900  1349
+##  9 8     0.994   517
+## 10 9     0.822   292
+## 11 10    0.772   469
+## 12 11    0.773   176
+## 13 12    0.736   182
+## 14 13    0.779   331
+## 15 14    0.223   224
+## 16 15    0.905   474
+## 17 16    0.932  2706
+## 18 17    0.870   737</code></pre>
+</div>
+<div id="average-no.-of-friends-in-each-cluster" class="section level2" number="3.11">
+<h2><span class="header-section-number">3.11</span> Average no. of friends in each cluster</h2>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="modelling.html#cb45-1" aria-hidden="true" tabindex="-1"></a>avgf <span class="ot">&lt;-</span> sns_new <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(clust) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">avgf=</span><span class="fu">mean</span>(friends),<span class="at">size=</span><span class="fu">n</span>())</span>
+<span id="cb45-2"><a href="modelling.html#cb45-2" aria-hidden="true" tabindex="-1"></a>avgf</span></code></pre></div>
+<pre><code>## # A tibble: 18 x 3
+##    clust  avgf  size
+##  * &lt;fct&gt; &lt;dbl&gt; &lt;int&gt;
+##  1 0      28.4 15891
+##  2 1      44       1
+##  3 2      49       1
+##  4 3     162       1
+##  5 4      56.5     2
+##  6 5      31.1    60
+##  7 6      31.3   189
+##  8 7      39.2  1349
+##  9 8      40.2   517
+## 10 9      34.5   292
+## 11 10     32.9   469
+## 12 11     32.1   176
+## 13 12     32.3   182
+## 14 13     33.0   331
+## 15 14     31.2   224
+## 16 15     35.0   474
+## 17 16     37.7  2706
+## 18 17     30.1   737</code></pre>
+</div>
+<div id="lets-examine-profile-with-high-no.-of-drugs-and-death-words" class="section level2" number="3.12">
+<h2><span class="header-section-number">3.12</span> Lets examine profile with high no. of drugs and death words</h2>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="modelling.html#cb47-1" aria-hidden="true" tabindex="-1"></a>hdd <span class="ot">&lt;-</span> sns_new <span class="sc">%&gt;%</span> <span class="fu">filter</span>(death<span class="sc">&gt;</span><span class="dv">5</span> <span class="sc">|</span> drugs<span class="sc">&gt;</span><span class="dv">5</span>)</span>
+<span id="cb47-2"><a href="modelling.html#cb47-2" aria-hidden="true" tabindex="-1"></a>hdd</span></code></pre></div>
+<pre><code>##     gradyear_2006 gradyear_2007 gradyear_2008 gradyear_2009 gender_F gender_M
+##  1:             1             0             0             0        1        0
+##  2:             1             0             0             0        1        0
+##  3:             1             0             0             0        1        0
+##  4:             1             0             0             0        0        1
+##  5:             1             0             0             0        1        0
+##  6:             0             1             0             0        1        0
+##  7:             0             1             0             0        1        0
+##  8:             0             1             0             0        1        0
+##  9:             0             1             0             0        1        0
+## 10:             0             1             0             0        1        0
+## 11:             0             1             0             0        1        0
+## 12:             0             0             1             0        1        0
+## 13:             0             0             1             0        0        1
+## 14:             0             0             1             0        0        1
+## 15:             0             0             1             0        1        0
+## 16:             0             0             0             1        0        1
+## 17:             0             0             0             1        1        0
+##        age friends basketball football soccer softball volleyball swimming
+##  1: 18.360       8          0        0      0        0          0        0
+##  2: 18.587       0          0        0      0        1          0        0
+##  3: 19.502      52          0        0      0        0          0        0
+##  4: 18.598      24          0        0      0        0          0        0
+##  5: 18.661      14          0        0      0        0          0        0
+##  6: 18.084       2          0       11      0        0          0        0
+##  7: 17.440     162          0        1      0        0          0        0
+##  8: 17.060      41          0        0      0        0          0        0
+##  9: 17.410      43          0        1      0        0          0        0
+## 10: 13.544      95          0        1      0        0          1        0
+## 11: 18.119      44          0        2      0        0          0        1
+## 12: 16.561      42          0        0      0        0          0        0
+## 13: 16.778       5          5        0      0        0          0        0
+## 14: 16.906       9          0        0      0        0          0        0
+## 15: 17.166       1          0        0      0        0          0        0
+## 16: 15.316      27          0        0      0        0          0        0
+## 17: 15.222      46          0        1      1        0          0        0
+##     cheerleading baseball tennis sports cute sex sexy hot kissed dance band
+##  1:            0        0      0      0    0   0    0   0      0     0    0
+##  2:            0        0      0      0    1   0    0   0      0     2    0
+##  3:            0        0      0      0    0   0    0   0      0     0    0
+##  4:            0        0      0      2    0   1    1   0      0     0    0
+##  5:            0        0      0      0    0   4    0   0      0     0    0
+##  6:            6        0      0      7    8  21    1   1      9    12    7
+##  7:            1        1      0      1    4   4    2   0      2     6    3
+##  8:            0        0      0      0   14   6    5   0      2     1    3
+##  9:            0        0      0      0    2   9    2   0      1     3    0
+## 10:            0        0      0      1    0   0    0   0      0     1    0
+## 11:            0        0      0      0    1  22    1   0      0     1    1
+## 12:            0        0      0      0    2   0    0   0      0     2    0
+## 13:            0        2      0      0    0   0    0   0      0     0    0
+## 14:            0        0      0      0    2   2    0   0      1     0    0
+## 15:            0        0      0      0    0   0    0   0      0     0    0
+## 16:            0        0      0      0    0   1    0   0      0     0    1
+## 17:            0        0      0      1   11   2    1   2      8    10    0
+##     marching music rock god church jesus bible hair dress blonde mall shopping
+##  1:        0     0    0   0      0     0     0    0     0      0    0        0
+##  2:        0     2    1   0      1     0     0    0     0      0    0        0
+##  3:        0     0    0   0      0     0     0    0     0      0    0        0
+##  4:        0     0    0   3      2     0     0    0     0      0    0        0
+##  5:        0     1    0   1      0     0     0    6     0      1    1        0
+##  6:        0    12    2   4      5     0     0   27     0      1    2        8
+##  7:        1     8    3   6      1     0     1    1     1      0    2        0
+##  8:        0     5    9   1      0     0     0    3     5      0    0        1
+##  9:        0     0    1   3      0     0     0    3     1      0    0        0
+## 10:        0     0    0   1      5     1     0    0     0      0    0        0
+## 11:        0     0    1  10      0     1     0   12     2    327    0        0
+## 12:        0     0    1   1      0     3     0    9     0      0    1        0
+## 13:        0     2    0   2      0     0     0    9     0      0    3        0
+## 14:        0     1    0   6      0     0     3    3     0      1    1        0
+## 15:        0     1    0   2      0     0     0    8     0      0    3        0
+## 16:        0     0    0   1      0     0     0    0     0      0    0        0
+## 17:        0     1    0   6      0     0     0    8     2      0    4        1
+##     clothes hollister abercrombie die death drunk drugs clust
+##  1:       0         0           0   3     3     0    16    17
+##  2:       0         0           0   0    14     0     0    16
+##  3:       0         0           0   0     9     0     0    16
+##  4:       0         0           0   2     8     1     0    16
+##  5:       0         0           0   6     7     0     1     6
+##  6:       4         9           1   4     1     3     6     4
+##  7:       0         0           1   4     0     0     7     5
+##  8:       1         0           0   7     7     2     0     5
+##  9:       0         0           0   9     6     0     0     6
+## 10:       0         0           0   0     0     0    11    17
+## 11:       1         0           0   6     6     6     0     1
+## 12:       0         0           0   3     6     0     0     6
+## 13:       0         0           0   3     2     3     6    17
+## 14:       0         0           0   1     0     1     8    11
+## 15:       0         0           0   4     0     3     6    17
+## 16:       0         0           0   5     0     0    10    17
+## 17:       1         0           0   3    12     0     1     5</code></pre>
+<ul>
+<li>Most of them belong to cluster 8 and 12</li>
+</ul>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="exploratory-data-analysis.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
